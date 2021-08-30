@@ -46,6 +46,39 @@ var (
 	ids            *identify.IDService
 )
 
+type AttnetsENREntry []byte
+
+func NewAttnetsENREntry(input_bytes string) AttnetsENREntry {
+
+	result, err := hex.DecodeString(input_bytes)
+
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	return result
+}
+
+func (aee AttnetsENREntry) ENRKey() string {
+	return "attnets"
+}
+
+type Eth2ENREntry []byte
+
+func NewEth2DataEntry(input_bytes string) Eth2ENREntry {
+	result, err := hex.DecodeString(input_bytes)
+
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	return result
+}
+
+func (eee Eth2ENREntry) ENRKey() string {
+	return "eth2"
+}
+
 func main() {
 
 	//reader := bufio.NewReader(os.Stdin)
@@ -87,7 +120,7 @@ func main() {
 	prvKey, err := ParsePrivateKey(*privKeyString)
 
 	localNode := createLocalNode(prvKey)
-	fmt.Println(localNode)
+	//fmt.Println(localNode)
 
 	h, err = makeHost(ctx, *sourcePort, prvKey)
 	if err != nil {
@@ -145,13 +178,23 @@ func main() {
 	//}
 
 	//localNode.Set(enr.WithEntry("eth2", "0xb5303f2a"))
-
+	localNode.Set(NewAttnetsENREntry("ffffffffffffffff"))
+	localNode.Set(NewEth2DataEntry("b5303f2a"))
 	//fmt.Printf("%+v\n", localNode)
 
 	//fmt.Println(localNode.ID())
 
-	dv5_client, err := start_dv5(9001, prvKey, localNode)
-	fmt.Println(dv5_client)
+	dv5_client, err := start_dv5(uint16(*sourcePort), prvKey, localNode)
+	fmt.Println("PING")
+
+	dv5_client.Ping(enode.MustParse("enr:-Ku4QImhMc1z8yCiNJ1TyUxdcfNucje3BGwEHzodEZUan8PherEo4sF7pPHPSIB1NNuSg5fZy7qFsjmUKs2ea1Whi0EBh2F0dG5ldHOIAAAAAAAAAACEZXRoMpD1pf1CAAAAAP__________gmlkgnY0gmlwhBLf22SJc2VjcDI1NmsxoQOVphkDqal4QzPMksc5wnpuC3gvSC8AfbFOnZY_On34wIN1ZHCCIyg"))
+	random_nodes := dv5_client.RandomNodes()
+
+	for random_nodes.Next() {
+		fmt.Printf("n: %s\n", random_nodes.Node().ID().String())
+	}
+
+	//fmt.Printf("%+v\n", random_nodes)
 
 	//iter := dv5_client.RandomNodes()
 
