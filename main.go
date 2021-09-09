@@ -118,10 +118,10 @@ func main() {
 	//prvKey := generate_privKey()
 	//generate_privKey()
 	prvKey, err := ParsePrivateKey(*privKeyString)
-
+	
 	localNode := createLocalNode(prvKey)
 	//fmt.Println(localNode)
-
+	
 	h, err = makeHost(ctx, *sourcePort, prvKey)
 	if err != nil {
 		log.Println(err)
@@ -288,7 +288,7 @@ func generate_privKey() *crypto.Secp256k1PrivateKey {
 func start_dv5(listenPort uint16, prvKey *crypto.Secp256k1PrivateKey, localNode *enode.LocalNode) (discover.UDPv5, error) {
 
 	udpAddr := &net.UDPAddr{
-		IP:   net.ParseIP("127.0.0.1"),
+		IP:   net.ParseIP("0.0.0.0"),
 		Port: int(listenPort),
 	}
 
